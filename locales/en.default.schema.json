@@ -435,7 +435,8 @@
     "view_all_button": "View all",
     "pills": "Pills",
     "comparison_slider": "Comparison slider",
-    "promo_bar": "Promo bar"
+    "promo_bar": "Promo bar",
+    "custom_header": "Custom header"
   },
   "options": {
     "above_carousel": "Above carousel",
@@ -1178,7 +1179,20 @@
     "cs_slider_inner_color": "Slider inner color",
     "text_on_images": "Text on images",
     "x_position": "Horizontal position",
-    "y_position": "Vertical position"
+    "y_position": "Vertical position",
+    "signin_text": "Sign in text",
+    "signin_link": "Sign in link",
+    "orders_text": "Orders text",
+    "orders_link": "Orders link",
+    "marketing_text": "Marketing text",
+    "cta_text": "CTA text",
+    "cta_link": "CTA link",
+    "search_placeholder": "Search placeholder",
+    "shop_menu": "Shop menu",
+    "account_menu": "Account menu",
+    "features_menu": "Features menu",
+    "logo_width": "Logo width",
+    "enable_sticky_header": "Sticky header"
   },
   "text_defaults": {
     "accordion_heading": "Accordion heading",
