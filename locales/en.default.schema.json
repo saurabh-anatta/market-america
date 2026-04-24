@@ -434,7 +434,8 @@
     "video_section": "Video",
     "view_all_button": "View all",
     "pills": "Pills",
-    "comparison_slider": "Comparison slider"
+    "comparison_slider": "Comparison slider",
+    "promo_bar": "Promo bar"
   },
   "options": {
     "above_carousel": "Above carousel",
@@ -935,6 +936,7 @@
     "layout_type": "Type",
     "left": "Left",
     "left_padding": "Left padding",
+    "left_text": "Left text",
     "length": "Length",
     "letter_spacing": "Letter spacing",
     "limit_content_width": "Limit content width",
@@ -1055,7 +1057,9 @@
     "regular": "Regular",
     "review_count": "Review count",
     "right": "Right",
+    "right_link": "Right link",
     "right_padding": "Right padding",
+    "right_text": "Right text",
     "row": "Row",
     "scroll_speed": "Time to next announcement",
     "search": "Search",

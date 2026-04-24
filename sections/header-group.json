@@ -11,6 +11,15 @@
   "type": "header",
   "name": "t:names.header",
   "sections": {
+    "promo_bar_kX7m9P": {
+      "type": "promo-bar",
+      "settings": {
+        "left_text": "Your Shop Consultant is SHOP.COM",
+        "right_text": "Start Your SHOP.COM Business",
+        "right_link": "",
+        "color_scheme": "scheme-7"
+      }
+    },
     "header_announcements_9jGBFp": {
       "type": "header-announcements",
       "blocks": {
@@ -112,6 +121,7 @@
     }
   },
   "order": [
+    "promo_bar_kX7m9P",
     "header_announcements_9jGBFp",
     "header_section"
   ]
