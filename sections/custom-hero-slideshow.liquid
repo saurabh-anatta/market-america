@@ -1,0 +1,763 @@
+{%- liquid
+  assign slide_count = section.blocks.size
+  assign show_arrows = true
+  if section.settings.icons_style == 'none' or slide_count <= 1
+    assign show_arrows = false
+  endif
+-%}
+
+{%- if slide_count > 1 -%}
+  {%- capture controls -%}
+    {%- render 'slideshow-controls',
+      style: section.settings.pagination_style,
+      autoplay: section.settings.autoplay,
+      item_count: slide_count,
+      show_arrows: false,
+      arrows_on_media: true,
+      controls_on_media: true,
+      pagination_position: 'center',
+      icon_style: section.settings.icons_style
+    -%}
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- capture slides -%}
+  {%- for block in section.blocks -%}
+    {%- capture slide_children -%}
+      <div class="custom-hero-slide" {{ block.shopify_attributes }}
+        style="
+          --overlay-opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+          --overlay-direction: {{ block.settings.overlay_gradient_direction }};
+          --overlay-direction-mobile: {{ block.settings.overlay_gradient_direction_mobile }};
+          --hero-button-bg: {{ section.settings.button_color }};
+          --hero-button-color: {{ section.settings.button_text_color }};
+          --hero-button-radius: {{ section.settings.button_border_radius }}px;
+          --content-align: {% case section.settings.content_alignment %}{% when 'left' %}flex-start{% when 'center' %}center{% when 'right' %}flex-end{% endcase %};
+          --content-text-align: {{ section.settings.content_alignment }};
+          --content-align-mobile: {% case section.settings.content_alignment_mobile %}{% when 'left' %}flex-start{% when 'center' %}center{% when 'right' %}flex-end{% endcase %};
+          --content-text-align-mobile: {{ section.settings.content_alignment_mobile }};
+        "
+      >
+        <div class="custom-hero-slide__image-container">
+          {%- if block.settings.image != blank -%}
+            {%- assign desktop_sizes = '(min-width: 750px) 100vw, 100vw' -%}
+            {{
+              block.settings.image
+              | image_url: width: block.settings.image.width
+              | image_tag:
+                sizes: desktop_sizes,
+                widths: '375,550,750,1100,1500,1780,2000',
+                loading: 'eager',
+                fetchpriority: 'high',
+                class: 'custom-hero-slide__image custom-hero-slide__image--desktop',
+                alt: block.settings.image.alt
+            }}
+          {%- endif -%}
+          {%- if block.settings.image_mobile != blank -%}
+            {%- assign mobile_sizes = '100vw' -%}
+            {{
+              block.settings.image_mobile
+              | image_url: width: block.settings.image_mobile.width
+              | image_tag:
+                sizes: mobile_sizes,
+                widths: '375,550,750',
+                loading: 'eager',
+                fetchpriority: 'high',
+                class: 'custom-hero-slide__image custom-hero-slide__image--mobile',
+                alt: block.settings.image_mobile.alt
+            }}
+          {%- elsif block.settings.image != blank -%}
+            {{
+              block.settings.image
+              | image_url: width: block.settings.image.width
+              | image_tag:
+                sizes: '100vw',
+                widths: '375,550,750',
+                loading: 'eager',
+                fetchpriority: 'high',
+                class: 'custom-hero-slide__image custom-hero-slide__image--mobile',
+                alt: block.settings.image.alt
+            }}
+          {%- endif -%}
+        </div>
+
+        <div class="custom-hero-slide__overlay custom-hero-slide__overlay--desktop"></div>
+        <div class="custom-hero-slide__overlay custom-hero-slide__overlay--mobile"></div>
+
+        <div class="custom-hero-slide__content">
+          <div class="custom-hero-slide__text-group">
+            {%- if section.settings.show_logo -%}
+              <div class="custom-hero-slide__logo">
+                {%- if section.settings.logo_image != blank -%}
+                  {{
+                    section.settings.logo_image
+                    | image_url: width: 214
+                    | image_tag:
+                      loading: 'eager',
+                      class: 'custom-hero-slide__logo-img',
+                      alt: section.settings.logo_image.alt
+                  }}
+                {%- else -%}
+                  <img
+                    src="{{ 'frame-1.svg' | asset_url }}"
+                    alt="Logo"
+                    class="custom-hero-slide__logo-img"
+                    loading="eager"
+                    width="107"
+                    height="17"
+                  >
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            <div class="custom-hero-slide__copy">
+              {%- if block.settings.heading != blank -%}
+                <h2 class="custom-hero-slide__heading">
+                  {{- block.settings.heading | escape -}}
+                </h2>
+              {%- endif -%}
+              {%- if block.settings.subheading != blank -%}
+                <p class="custom-hero-slide__subheading">
+                  {{- block.settings.subheading | escape -}}
+                </p>
+              {%- endif -%}
+            </div>
+          </div>
+
+          {%- if block.settings.button_label != blank -%}
+            <a
+              {% if block.settings.button_link != blank %}
+                href="{{ block.settings.button_link }}"
+              {% endif %}
+              class="custom-hero-slide__button"
+            >
+              {{- block.settings.button_label | escape -}}
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endcapture -%}
+
+    {%- render 'slideshow-slide',
+      index: forloop.index0,
+      children: slide_children,
+      slide_size: section.settings.slide_height
+    -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="custom-hero-slideshow spacing-style section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} disable-section-top-offset"
+  style="{% render 'spacing-padding', settings: section.settings %}"
+>
+  {%- render 'slideshow',
+    slides: slides,
+    controls: controls,
+    show_arrows: show_arrows,
+    icon_style: section.settings.icons_style,
+    icon_shape: section.settings.icons_shape,
+    autoplay: section.settings.autoplay,
+    autoplay_speed: section.settings.autoplay_speed,
+    slide_count: slide_count,
+    slide_size: section.settings.slide_height
+  -%}
+</div>
+
+{% stylesheet %}
+  .custom-hero-slideshow {
+    position: relative;
+  }
+
+  .custom-hero-slide {
+    position: relative;
+    display: flex;
+    align-items: var(--content-align, flex-start);
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    overflow: hidden;
+  }
+
+  .custom-hero-slide__image-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .custom-hero-slide__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .custom-hero-slide__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .custom-hero-slide__overlay--desktop {
+    background: linear-gradient(var(--overlay-direction, to left), transparent, rgba(0, 0, 0, var(--overlay-opacity, 0.6)));
+  }
+
+  .custom-hero-slide__overlay--mobile {
+    background: linear-gradient(
+      var(--overlay-direction-mobile, to bottom),
+      transparent 0%,
+      rgba(0, 0, 0, calc(var(--overlay-opacity, 0.6) * 0.63)) 55%,
+      rgba(0, 0, 0, var(--overlay-opacity, 0.6)) 100%
+    );
+    display: none;
+  }
+
+  .custom-hero-slide__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: var(--content-align, flex-start);
+    text-align: var(--content-text-align, left);
+    gap: 24px;
+    max-width: 600px;
+    width: 100%;
+    padding: 48px 0 48px 80px;
+    color: #fff;
+  }
+
+  .custom-hero-slide__text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: inherit;
+  }
+
+  .custom-hero-slide__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: inherit;
+  }
+
+  .custom-hero-slide__logo-img {
+    width: 107px;
+    height: auto;
+    display: block;
+  }
+
+  .custom-hero-slide__heading {
+    font-family: var(--font-heading--family);
+    font-size: 64px;
+    line-height: 64px;
+    font-weight: 500;
+    margin: 0;
+    color: inherit;
+  }
+
+  .custom-hero-slide__subheading {
+    font-family: var(--font-body--family);
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 400;
+    margin: 0;
+    color: inherit;
+  }
+
+  .custom-hero-slide__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--hero-button-bg, #098AA7);
+    color: var(--hero-button-color, #fff);
+    border-radius: var(--hero-button-radius, 32px);
+    border: none;
+    padding: 4px 64px;
+    min-height: 48px;
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 400;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    text-transform: capitalize;
+  }
+
+  .custom-hero-slide__button:hover {
+    opacity: 0.85;
+  }
+
+  /* Desktop: show desktop image/overlay, hide mobile */
+  @media screen and (min-width: 750px) {
+    .custom-hero-slide__image--mobile {
+      display: none;
+    }
+
+    .custom-hero-slide__overlay--mobile {
+      display: none;
+    }
+
+    .custom-hero-slide__overlay--desktop {
+      display: block;
+    }
+
+    .custom-hero-slide__image--desktop {
+      display: block;
+    }
+  }
+
+  /* Mobile: show mobile image/overlay, hide desktop */
+  @media screen and (max-width: 749px) {
+    .custom-hero-slide__image--desktop {
+      display: none;
+    }
+
+    .custom-hero-slide__overlay--desktop {
+      display: none;
+    }
+
+    .custom-hero-slide__overlay--mobile {
+      display: block;
+    }
+
+    .custom-hero-slide__image--mobile {
+      display: block;
+    }
+
+    .custom-hero-slide {
+      align-items: var(--content-align-mobile, center);
+      justify-content: flex-end;
+    }
+
+    .custom-hero-slide__content {
+      align-items: var(--content-align-mobile, center);
+      text-align: var(--content-text-align-mobile, center);
+      justify-content: flex-end;
+      gap: 16px;
+      max-width: 100%;
+      padding: 24px 20px;
+    }
+
+    .custom-hero-slide__text-group {
+      gap: 12px;
+    }
+
+    .custom-hero-slide__copy {
+      gap: 12px;
+    }
+
+    .custom-hero-slide__logo-img {
+      width: 77px;
+    }
+
+    .custom-hero-slide__heading {
+      font-size: 36px;
+      line-height: 40px;
+    }
+
+    .custom-hero-slide__subheading {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .custom-hero-slide__button {
+      font-size: 14px;
+      font-weight: 500;
+      padding: 4px 48px;
+      min-height: 40px;
+    }
+  }
+
+  /* Arrow styling overrides for this section */
+  .custom-hero-slideshow-wrapper .slideshow-control.slideshow-control--shape-circle {
+    background-color: #fff;
+    color: #141414;
+    border: 1px solid #141414;
+  }
+
+  .custom-hero-slideshow-wrapper .slideshow-control.slideshow-control--shape-square {
+    background-color: #fff;
+    color: #141414;
+    border: 1px solid #141414;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.custom_hero_slideshow",
+  "tag": "section",
+  "class": "custom-hero-slideshow-wrapper section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.logo"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "t:settings.show_logo",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "t:settings.logo_image"
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "slide_height",
+      "label": "t:settings.media_height",
+      "options": [
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:settings.content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment_mobile",
+      "label": "t:settings.content_alignment_mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:content.navigation"
+    },
+    {
+      "type": "select",
+      "id": "icons_style",
+      "label": "t:settings.icons",
+      "options": [
+        {
+          "value": "arrow",
+          "label": "t:options.arrows"
+        },
+        {
+          "value": "chevron",
+          "label": "t:options.chevrons"
+        },
+        {
+          "value": "arrows_large",
+          "label": "t:options.large_arrows"
+        },
+        {
+          "value": "chevron_large",
+          "label": "t:options.large_chevrons"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "chevron"
+    },
+    {
+      "type": "select",
+      "id": "icons_shape",
+      "label": "t:settings.icon_background",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "circle",
+          "label": "t:options.circle"
+        },
+        {
+          "value": "square",
+          "label": "t:options.square"
+        }
+      ],
+      "default": "circle"
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "t:settings.pagination",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "dots",
+          "label": "t:options.dots"
+        },
+        {
+          "value": "counter",
+          "label": "t:options.counter"
+        }
+      ],
+      "default": "dots"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:settings.autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:settings.autoplay_speed",
+      "min": 3,
+      "max": 7,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "t:content.buttons"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "t:settings.button_color",
+      "default": "#098AA7"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "t:settings.button_text_color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "number",
+      "id": "button_border_radius",
+      "label": "t:settings.button_border_radius",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-6"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:names.slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:settings.image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "t:settings.image_mobile"
+        },
+        {
+          "type": "header",
+          "content": "t:content.text"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:settings.heading",
+          "default": "Feel Younger. Think Sharper. Age Better"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "t:settings.subheading",
+          "default": "Engineered for fast uptake and cellular support."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:settings.button_label",
+          "default": "Start Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:settings.button_link"
+        },
+        {
+          "type": "header",
+          "content": "t:content.media"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "t:settings.overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 60
+        },
+        {
+          "type": "select",
+          "id": "overlay_gradient_direction",
+          "label": "t:settings.overlay_gradient_direction",
+          "options": [
+            {
+              "value": "to left",
+              "label": "t:options.to_left"
+            },
+            {
+              "value": "to right",
+              "label": "t:options.to_right"
+            },
+            {
+              "value": "to top",
+              "label": "t:options.to_top"
+            },
+            {
+              "value": "to bottom",
+              "label": "t:options.to_bottom"
+            }
+          ],
+          "default": "to left"
+        },
+        {
+          "type": "select",
+          "id": "overlay_gradient_direction_mobile",
+          "label": "t:settings.overlay_gradient_direction_mobile",
+          "options": [
+            {
+              "value": "to left",
+              "label": "t:options.to_left"
+            },
+            {
+              "value": "to right",
+              "label": "t:options.to_right"
+            },
+            {
+              "value": "to top",
+              "label": "t:options.to_top"
+            },
+            {
+              "value": "to bottom",
+              "label": "t:options.to_bottom"
+            }
+          ],
+          "default": "to bottom"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.custom_hero_slideshow",
+      "category": "t:categories.banners",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Feel Younger. Think Sharper. Age Better",
+            "subheading": "Engineered for fast uptake and cellular support.",
+            "button_label": "Start Now",
+            "overlay_opacity": 60,
+            "overlay_gradient_direction": "to left",
+            "overlay_gradient_direction_mobile": "to bottom"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

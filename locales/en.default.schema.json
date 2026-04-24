@@ -434,7 +434,8 @@
     "video_section": "Video",
     "view_all_button": "View all",
     "pills": "Pills",
-    "comparison_slider": "Comparison slider"
+    "comparison_slider": "Comparison slider",
+    "custom_hero_slideshow": "Custom hero slideshow"
   },
   "options": {
     "above_carousel": "Above carousel",
@@ -746,7 +747,11 @@
     "wide": "Wide",
     "youtube": "YouTube",
     "with_hints": "With hints",
-    "below_media": "Below media"
+    "below_media": "Below media",
+    "to_left": "To left",
+    "to_right": "To right",
+    "to_top": "To top",
+    "to_bottom": "To bottom"
   },
   "settings": {
     "accordion": "Accordion",
@@ -1174,7 +1179,20 @@
     "cs_slider_inner_color": "Slider inner color",
     "text_on_images": "Text on images",
     "x_position": "Horizontal position",
-    "y_position": "Vertical position"
+    "y_position": "Vertical position",
+    "show_logo": "Show logo",
+    "logo_image": "Logo image",
+    "button_color": "Button color",
+    "button_text_color": "Button text color",
+    "button_border_radius": "Button border radius",
+    "content_alignment_mobile": "Mobile alignment",
+    "overlay_gradient_direction": "Overlay direction",
+    "overlay_gradient_direction_mobile": "Mobile overlay direction",
+    "image_mobile": "Mobile image",
+    "subheading": "Subheading",
+    "button_label": "Button label",
+    "button_link": "Button link",
+    "autoplay_speed": "Speed"
   },
   "text_defaults": {
     "accordion_heading": "Accordion heading",
