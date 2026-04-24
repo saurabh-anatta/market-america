@@ -27,6 +27,36 @@
     {% endstyle %}
   {% endif %}
 
+  {%- if block_settings.gradient_direction_mobile != blank and block_settings.gradient_direction_mobile != 'same_as_desktop' and block_settings.toggle_overlay and block_settings.overlay_style == 'gradient' -%}
+    {% style %}
+      @media screen and (max-width: 749px) {
+        .shopify-section-{{ section.id }} [id='{{ block.id }}'] .overlay--gradient {
+          --overlay-direction: {{ block_settings.gradient_direction_mobile }};
+        }
+      }
+    {% endstyle %}
+  {%- endif -%}
+
+  {%- if block_settings.horizontal_alignment_flex_direction_column_mobile != blank and block_settings.horizontal_alignment_flex_direction_column_mobile != 'same_as_desktop' and block_settings.content_direction != 'row' -%}
+    {%- liquid
+      assign mobile_align = block_settings.horizontal_alignment_flex_direction_column_mobile
+      assign mobile_text_align = 'start'
+      if mobile_align == 'center'
+        assign mobile_text_align = 'center'
+      elsif mobile_align == 'flex-end'
+        assign mobile_text_align = 'end'
+      endif
+    -%}
+    {% style %}
+      @media screen and (max-width: 749px) {
+        .shopify-section-{{ section.id }} [id='{{ block.id }}'] .layout-panel-flex {
+          --horizontal-alignment: {{ mobile_align }};
+          text-align: {{ mobile_text_align }};
+        }
+      }
+    {% endstyle %}
+  {%- endif -%}
+
   <div class="slide__image-container{% if rounded_image_corners %} slide__image-container--rounded{% endif %}">
     {%- if block_settings.toggle_overlay -%}
       {% render 'overlay', settings: block_settings %}
@@ -56,11 +86,30 @@
       -%}
 
       {%- if block_settings.media_type_1 == 'image' -%}
-        {{
-          block_settings.image_1
-          | image_url: width: 3840
-          | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
-        }}
+        {%- if block_settings.image_1_mobile != blank -%}
+          {%- liquid
+            assign mobile_image = block_settings.image_1_mobile
+            assign mobile_height = mobile_image.width | divided_by: mobile_image.aspect_ratio | round
+          -%}
+          <picture>
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ mobile_image | image_url: width: 375 }} 375w, {{ mobile_image | image_url: width: 550 }} 550w, {{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w"
+              sizes="100vw"
+            >
+            {{
+              block_settings.image_1
+              | image_url: width: 3840
+              | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
+            }}
+          </picture>
+        {%- else -%}
+          {{
+            block_settings.image_1
+            | image_url: width: 3840
+            | image_tag: height: height, sizes: sizes, widths: widths, class: 'slide__image', loading: loading, fetchpriority: fetchpriority
+          }}
+        {%- endif -%}
       {%- else -%}
         {%- if block_settings.video_1.preview_image -%}
 
@@ -145,7 +194,12 @@
     position: absolute;
   }
 
+  .slide__image-container > picture {
+    display: contents;
+  }
+
   .slide__image-container > .slide__image,
+  .slide__image-container > picture > .slide__image,
   .slide__image-container > .slide__video,
   .slide__image-container > .slide__video-poster {
     position: relative;
@@ -217,6 +271,12 @@
       "type": "image_picker",
       "id": "image_1",
       "label": "t:settings.image",
+      "visible_if": "{{ block.settings.media_type_1 == 'image' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1_mobile",
+      "label": "t:settings.mobile_image",
       "visible_if": "{{ block.settings.media_type_1 == 'image' }}"
     },
     {
@@ -328,6 +388,31 @@
     },
     {
       "type": "select",
+      "id": "horizontal_alignment_flex_direction_column_mobile",
+      "label": "t:settings.mobile_alignment",
+      "options": [
+        {
+          "value": "same_as_desktop",
+          "label": "t:options.same_as_desktop"
+        },
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "same_as_desktop",
+      "visible_if": "{{ block.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
       "id": "vertical_alignment_flex_direction_column",
       "label": "t:settings.position",
       "options": [
@@ -420,9 +505,46 @@
         {
           "value": "to bottom",
           "label": "t:options.down"
+        },
+        {
+          "value": "to left",
+          "label": "t:options.to_left"
+        },
+        {
+          "value": "to right",
+          "label": "t:options.to_right"
         }
       ],
       "default": "to top",
+      "visible_if": "{{ block.settings.toggle_overlay and block.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction_mobile",
+      "label": "t:settings.gradient_direction_mobile",
+      "options": [
+        {
+          "value": "same_as_desktop",
+          "label": "t:options.same_as_desktop"
+        },
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        },
+        {
+          "value": "to left",
+          "label": "t:options.to_left"
+        },
+        {
+          "value": "to right",
+          "label": "t:options.to_right"
+        }
+      ],
+      "default": "same_as_desktop",
       "visible_if": "{{ block.settings.toggle_overlay and block.settings.overlay_style == 'gradient' }}"
     },
     {
