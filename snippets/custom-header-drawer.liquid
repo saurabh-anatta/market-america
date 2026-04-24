@@ -1,0 +1,198 @@
+{% doc %}
+  Custom Header Drawer
+
+  Renders a left-side sliding drawer menu with grouped sections
+  (Shop, Account, Features) matching the Figma menu design.
+
+  @param {linklist} shop_menu - Linklist for Shop section
+  @param {linklist} account_menu - Linklist for Account section
+  @param {linklist} features_menu - Linklist for Features section
+{% enddoc %}
+
+{%- comment -%} Drawer overlay {%- endcomment -%}
+<div
+  ref="drawerOverlay"
+  class="custom-header-drawer__overlay"
+  on:click="/handleOverlayClick"
+  aria-hidden="true"
+></div>
+
+{%- comment -%} Drawer panel {%- endcomment -%}
+<div
+  ref="drawer"
+  class="custom-header-drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ 'accessibility.menu' | t }}"
+>
+  {%- comment -%} Drawer header — logo + close {%- endcomment -%}
+  <div class="custom-header-drawer__header">
+    <a href="{{ routes.root_url }}" class="custom-header-drawer__logo">
+      <span class="svg-wrapper">
+        {{ 'shop-logo.svg' | inline_asset_content }}
+      </span>
+    </a>
+    <button
+      ref="drawerClose"
+      on:click="/handleDrawerClose"
+      class="custom-header-drawer__close button-unstyled"
+      aria-label="{{ 'actions.close' | t }}"
+    >
+      <span class="svg-wrapper">
+        {{ 'icon-new-exit.svg' | inline_asset_content }}
+      </span>
+    </button>
+  </div>
+
+  <div class="custom-header-drawer__body">
+    {%- comment -%} Shop section {%- endcomment -%}
+    {%- if shop_menu != blank and shop_menu.links.size > 0 -%}
+      <div class="custom-header-drawer__section">
+        <h3 class="custom-header-drawer__section-title">{{ shop_menu.title | escape }}</h3>
+        <nav class="custom-header-drawer__nav" aria-label="{{ shop_menu.title | escape }}">
+          <ul class="custom-header-drawer__list" role="list">
+            {%- for link in shop_menu.links -%}
+              {%- if link.links.size > 0 -%}
+                <li class="custom-header-drawer__item custom-header-drawer__item--has-children">
+                  <div class="custom-header-drawer__link-row">
+                    <a href="{{ link.url }}" class="custom-header-drawer__link custom-header-drawer__link--parent">
+                      {{ link.title | escape }}
+                    </a>
+                    <button
+                      data-submenu-toggle
+                      class="custom-header-drawer__chevron button-unstyled"
+                      aria-expanded="false"
+                      aria-label="{{ link.title | escape }}"
+                    >
+                      <span class="svg-wrapper">
+                        {{ 'chevron-right-2.svg' | inline_asset_content }}
+                      </span>
+                    </button>
+                  </div>
+                  <ul class="custom-header-drawer__submenu" role="list">
+                    {%- for child_link in link.links -%}
+                      <li class="custom-header-drawer__subitem">
+                        <a href="{{ child_link.url }}" class="custom-header-drawer__link">
+                          {{ child_link.title | escape }}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </li>
+              {%- else -%}
+                <li class="custom-header-drawer__item">
+                  <a href="{{ link.url }}" class="custom-header-drawer__link">
+                    {{ link.title | escape }}
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </nav>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Account section {%- endcomment -%}
+    {%- if account_menu != blank and account_menu.links.size > 0 -%}
+      <div class="custom-header-drawer__section">
+        <h3 class="custom-header-drawer__section-title">{{ account_menu.title | escape }}</h3>
+        <nav class="custom-header-drawer__nav" aria-label="{{ account_menu.title | escape }}">
+          <ul class="custom-header-drawer__list" role="list">
+            {%- for link in account_menu.links -%}
+              <li class="custom-header-drawer__item custom-header-drawer__item--icon">
+                <a href="{{ link.url }}" class="custom-header-drawer__link custom-header-drawer__link--with-icon">
+                  <span class="custom-header-drawer__icon svg-wrapper">
+                    {%- assign link_title_lower = link.title | downcase -%}
+                    {%- case link_title_lower -%}
+                      {%- when 'sign in / create account' -%}
+                        {{ 'noun-user-514033-1.svg' | inline_asset_content }}
+                      {%- when 'track orders' -%}
+                        {{ 'icon-track-orders-24px-1.svg' | inline_asset_content }}
+                      {%- when 'reorder items' -%}
+                        {{ 'icon-orders-24px-1.svg' | inline_asset_content }}
+                      {%- when 'help' -%}
+                        {{ 'icon-help-outline-24px-1.svg' | inline_asset_content }}
+                      {%- else -%}
+                        {{ 'noun-user-514033-1.svg' | inline_asset_content }}
+                    {%- endcase -%}
+                  </span>
+                  <span>{{ link.title | escape }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Features section {%- endcomment -%}
+    {%- if features_menu != blank and features_menu.links.size > 0 -%}
+      <div class="custom-header-drawer__section">
+        <h3 class="custom-header-drawer__section-title">{{ features_menu.title | escape }}</h3>
+        <nav class="custom-header-drawer__nav" aria-label="{{ features_menu.title | escape }}">
+          <ul class="custom-header-drawer__list" role="list">
+            {%- for link in features_menu.links -%}
+              <li class="custom-header-drawer__item custom-header-drawer__item--icon">
+                <a href="{{ link.url }}" class="custom-header-drawer__link custom-header-drawer__link--with-icon">
+                  <span class="custom-header-drawer__icon svg-wrapper">
+                    {%- assign link_title_lower = link.title | downcase -%}
+                    {%- case link_title_lower -%}
+                      {%- when 'home shopping list' -%}
+                        {{ 'icon-track-orders-24px-1-2.svg' | inline_asset_content }}
+                      {%- when 'list manager' -%}
+                        {{ 'icon-list-manager-24px-1.svg' | inline_asset_content }}
+                      {%- when 'egifts' -%}
+                        {{ 'icon-egifts-24px-1.svg' | inline_asset_content }}
+                      {%- when 'price alerts' -%}
+                        {{ 'icon-price-alerts-24px-1.svg' | inline_asset_content }}
+                      {%- when 'shopbuddy' -%}
+                        {{ 'icon-shopbuddy-24px-1.svg' | inline_asset_content }}
+                      {%- when 'deals' -%}
+                        {{ 'icon-deals-24px-1.svg' | inline_asset_content }}
+                      {%- when 'nutri-physical' -%}
+                        {{ 'np-icon-1.svg' | inline_asset_content }}
+                      {%- else -%}
+                        {{ 'icon-help-outline-24px-1.svg' | inline_asset_content }}
+                    {%- endcase -%}
+                  </span>
+                  <span>{{ link.title | escape }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Drawer bottom — country selector + social icons {%- endcomment -%}
+  <div class="custom-header-drawer__bottom">
+    <div class="custom-header-drawer__country-pill">
+      <span class="custom-header-drawer__flag svg-wrapper">
+        {{ 'us-united-states-streamline-flagpack.svg' | inline_asset_content }}
+      </span>
+      <span class="custom-header-drawer__country-text">{{ 'content.localization_region_and_language' | t }}</span>
+      <span class="custom-header-drawer__country-currency">(USD $)</span>
+      <span class="custom-header-drawer__country-chevron svg-wrapper">
+        {{ 'chevron-forward-streamline-outlined-material-symbols.svg' | inline_asset_content }}
+      </span>
+    </div>
+    <div class="custom-header-drawer__social">
+      <a href="#" class="custom-header-drawer__social-link" aria-label="Facebook">
+        <span class="svg-wrapper">{{ 'social-icons.svg' | inline_asset_content }}</span>
+      </a>
+      <a href="#" class="custom-header-drawer__social-link" aria-label="Twitter">
+        <span class="svg-wrapper">{{ 'social-icons-3.svg' | inline_asset_content }}</span>
+      </a>
+      <a href="#" class="custom-header-drawer__social-link" aria-label="Instagram">
+        <span class="svg-wrapper">{{ 'social-icons-2.svg' | inline_asset_content }}</span>
+      </a>
+      <a href="#" class="custom-header-drawer__social-link" aria-label="TikTok">
+        <span class="svg-wrapper">{{ 'social-icons-4.svg' | inline_asset_content }}</span>
+      </a>
+      <a href="#" class="custom-header-drawer__social-link" aria-label="YouTube">
+        <span class="svg-wrapper">{{ 'social-icons-5.svg' | inline_asset_content }}</span>
+      </a>
+    </div>
+  </div>
+</div>

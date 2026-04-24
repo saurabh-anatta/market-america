@@ -1,0 +1,76 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "t:names.header",
+  "sections": {
+    "promo_bar_kX7m9P": {
+      "type": "promo-bar",
+      "settings": {
+        "left_text": "Your Shop Consultant is SHOP.COM",
+        "right_text": "Start Your SHOP.COM Business",
+        "right_link": "",
+        "color_scheme": "scheme-7"
+      }
+    },
+    "header_announcements_9jGBFp": {
+      "type": "header-announcements",
+      "blocks": {
+        "announcement_BxgCk9": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Welcome to our store",
+            "link": "",
+            "font": "var(--font-subheading--family)",
+            "font_size": "0.75rem",
+            "weight": "",
+            "letter_spacing": "normal",
+            "case": "none"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "announcement_BxgCk9"
+      ],
+      "name": "t:names.announcement_bar",
+      "settings": {
+        "speed": 5,
+        "section_width": "page-width",
+        "color_scheme": "scheme-1",
+        "divider_width": 1,
+        "padding-block-start": 15,
+        "padding-block-end": 15
+      }
+    },
+    "header_section": {
+      "type": "custom-header",
+      "settings": {
+        "logo_width": 127,
+        "main_menu": "main-menu",
+        "shop_menu": "main-menu",
+        "account_menu": "",
+        "features_menu": "",
+        "signin_text": "Sign In",
+        "orders_text": "Track Orders",
+        "marketing_text": "",
+        "cta_text": "Shop Now",
+        "search_placeholder": "Search products",
+        "enable_sticky_header": true,
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "promo_bar_kX7m9P",
+    "header_announcements_9jGBFp",
+    "header_section"
+  ]
+}
